@@ -1,0 +1,9 @@
+{
+  "name": "flow-hypnose",
+  "version": "1.0.0",
+  "description": "Séance d'auto-hypnose guidée par IA — Claude + ElevenLabs",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}

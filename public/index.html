@@ -466,26 +466,6 @@
   </div>
 </header>
 
-    <div>
-      <label>Voix ElevenLabs</label>
-      <select id="elevenVoice">
-        <optgroup label="Voix féminines">
-          <option value="21m00Tcm4TlvDq8ikWAM">Rachel — Douce & posée</option>
-          <option value="EXAVITQu4vr4xnSDxMaL">Bella — Chaleureuse</option>
-          <option value="XB0fDUnXU5powFXDhCwa">Charlotte — Sereine</option>
-          <option value="XrExE9yKIg1WjnnlVkGX">Matilda — Apaisante</option>
-          <option value="9BWtsMINqrJLrRacOk9x">Sarah — Naturelle</option>
-        </optgroup>
-        <optgroup label="Voix masculines">
-          <option value="JBFqnCBsd6RMkjVDRZzb">George — Grave & posé</option>
-          <option value="onwK4e9ZLuTAKqWW03F9">Daniel — Chaleureux</option>
-          <option value="ErXwobaYiN019PkySvjV">Antoni — Profond</option>
-        </optgroup>
-      </select>
-    </div>
-  </div>
-</div>
-
 <!-- MAIN -->
 <main>
   <div class="grid-2">
@@ -531,6 +511,34 @@
             <option value="8">8 s — standard</option>
             <option value="10" selected>10 s — profond</option>
             <option value="12">12 s — très lent</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row-2">
+        <div>
+          <label>Vitesse de la voix — <span id="speedVal">0.80×</span></label>
+          <input type="range" id="voiceSpeed" min="0.7" max="1.1" step="0.05" value="0.80"
+            oninput="$('speedVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px">
+            <span>Lent</span><span>Normal</span><span>Rapide</span>
+          </div>
+        </div>
+        <div>
+          <label>Voix ElevenLabs</label>
+          <select id="elevenVoice">
+            <optgroup label="Voix féminines">
+              <option value="21m00Tcm4TlvDq8ikWAM">Rachel — Douce & posée</option>
+              <option value="EXAVITQu4vr4xnSDxMaL">Bella — Chaleureuse</option>
+              <option value="XB0fDUnXU5powFXDhCwa">Charlotte — Sereine</option>
+              <option value="XrExE9yKIg1WjnnlVkGX">Matilda — Apaisante</option>
+              <option value="9BWtsMINqrJLrRacOk9x">Sarah — Naturelle</option>
+            </optgroup>
+            <optgroup label="Voix masculines">
+              <option value="JBFqnCBsd6RMkjVDRZzb">George — Grave & posé</option>
+              <option value="onwK4e9ZLuTAKqWW03F9">Daniel — Chaleureux</option>
+              <option value="ErXwobaYiN019PkySvjV">Antoni — Profond</option>
+            </optgroup>
           </select>
         </div>
       </div>
@@ -677,7 +685,7 @@ function concatAudioBuffers(ctx, buffers) {
   return out;
 }
 
-async function buildElevenLabsBuffer(script, voiceId) {
+async function buildElevenLabsBuffer(script, voiceId, speed = 0.80) {
   const chunks = splitIntoChunks(script, 1800);
   const decoded = [];
 
@@ -689,7 +697,7 @@ async function buildElevenLabsBuffer(script, voiceId) {
     const res = await fetch('/api/tts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: chunks[i], voiceId })
+      body: JSON.stringify({ text: chunks[i], voiceId, speed })
     });
 
     if (!res.ok) {
@@ -970,7 +978,7 @@ $('btnPrepAudio').addEventListener('click', async () => {
 
   try {
     ensureAudio();
-    preparedBuffer = await buildElevenLabsBuffer(currentScript, $('elevenVoice').value);
+    preparedBuffer = await buildElevenLabsBuffer(currentScript, $('elevenVoice').value, parseFloat($('voiceSpeed').value));
     setStatus('Audio prêt — Lancer la séance ▶', 'idle');
     $('btnPlay').disabled   = false;
     $('btnReplay').disabled = false;

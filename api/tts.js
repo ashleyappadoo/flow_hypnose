@@ -27,7 +27,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'ELEVENLABS_API_KEY non configurée dans Vercel.' });
   }
 
-  const { text, voiceId } = req.body || {};
+  const { text, voiceId, speed } = req.body || {};
 
   if (!text) {
     return res.status(400).json({ error: 'Paramètre "text" manquant.' });
@@ -51,6 +51,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           text,
           model_id: 'eleven_multilingual_v2',
+          speed: Math.min(1.2, Math.max(0.7, parseFloat(speed) || 0.80)),
           voice_settings: {
             stability: 0.74,
             similarity_boost: 0.82,

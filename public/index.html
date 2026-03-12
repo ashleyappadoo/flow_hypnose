@@ -1,1016 +1,1318 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Flow Hypnose — Séance guidée par IA</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flow Hypnose — Séances d'hypnose personnalisées</title>
+  <meta name="description" content="Séances d'auto-hypnose personnalisées. Séances d'hypnose sur mesure. Script, voix et binaural beats générés par Flow Hypnose. Entrez en état de flow en 3 clics.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --navy:   #060d1e;
-      --ink:    #0b1526;
-      --card:   rgba(255,255,255,0.052);
-      --card2:  rgba(255,255,255,0.03);
-      --border: rgba(255,255,255,0.085);
-      --text:   rgba(255,255,255,0.88);
-      --muted:  rgba(255,255,255,0.48);
-      --subtle: rgba(255,255,255,0.28);
-      --gold:   #c9a96e;
-      --gold-a: rgba(201,169,110,0.22);
-      --gold-b: rgba(201,169,110,0.10);
-      --teal:   #74e8d2;
-      --teal-a: rgba(116,232,210,0.16);
-      --teal-b: rgba(116,232,210,0.06);
-      --purple: rgba(155,110,255,0.70);
-      --r: 16px;
-      --r-sm: 10px;
-    }
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,200;0,9..144,300;0,9..144,400;1,9..144,200;1,9..144,300&family=Sora:wght@300;400;500&display=swap" rel="stylesheet">
 
+  <style>
+    /* ── RESET & ROOT ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-      color: var(--text);
-      background: var(--navy);
-      background-image:
-        radial-gradient(ellipse 900px 700px at 10% -5%,  rgba(116,232,210,0.07) 0%, transparent 55%),
-        radial-gradient(ellipse 700px 600px at 90% 15%,  rgba(155,110,255,0.09) 0%, transparent 55%),
-        radial-gradient(ellipse 600px 500px at 50% 90%,  rgba(201,169,110,0.05) 0%, transparent 50%);
-      min-height: 100vh;
+    :root {
+      --ink:      #080b12;
+      --ink2:     #0d1220;
+      --ink3:     #131926;
+      --amber:    #d4924a;
+      --amber-l:  #e8b87a;
+      --amber-d:  rgba(212,146,74,0.12);
+      --amber-g:  rgba(212,146,74,0.06);
+      --teal:     #5ec4b0;
+      --teal-a:   rgba(94,196,176,0.10);
+      --white:    rgba(255,255,255,0.88);
+      --white-m:  rgba(255,255,255,0.50);
+      --white-s:  rgba(255,255,255,0.20);
+      --white-xs: rgba(255,255,255,0.07);
+      --border:   rgba(255,255,255,0.08);
     }
 
-    /* ─── HEADER ─── */
-    header {
-      max-width: 1160px;
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      font-weight: 300;
+      background: var(--ink);
+      color: var(--white);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── CUSTOM CURSOR ── */
+    .cursor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+    }
+    .cursor-dot {
+      width: 6px; height: 6px;
+      background: white;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: all 0.18s ease;
+    }
+    body:has(a:hover) .cursor-ring,
+    body:has(button:hover) .cursor-ring {
+      width: 56px; height: 56px;
+      border-color: rgba(212,146,74,0.8);
+    }
+
+    /* ── CANVAS BACKGROUND ── */
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── NOISE OVERLAY ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 28px 22px 0;
+      padding: 0 28px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 22px 0;
+      transition: background 0.4s, backdrop-filter 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(8,11,18,0.75);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+    .nav-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
     }
-    .brand {
+    .nav-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      font-weight: 300;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-logo span {
+      color: var(--amber);
+    }
+    .nav-links {
       display: flex;
-      align-items: baseline;
-      gap: 12px;
-    }
-    .brand-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 28px;
-      font-weight: 300;
-      letter-spacing: 0.04em;
-    }
-    .brand-sub {
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-    .status-pill {
-      display: inline-flex;
       align-items: center;
-      gap: 9px;
-      padding: 8px 16px;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      color: var(--white-m);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      padding: 9px 20px;
       border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.03);
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 0.03em;
-      transition: all 0.3s;
+      border: 1px solid rgba(212,146,74,0.35);
+      background: var(--amber-d);
+      color: var(--amber-l) !important;
+      font-size: 13px !important;
+      transition: all 0.2s !important;
     }
-    .status-dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: var(--subtle);
-      transition: background 0.4s, box-shadow 0.4s;
-      flex-shrink: 0;
+    .nav-cta:hover {
+      background: rgba(212,146,74,0.18) !important;
+      border-color: rgba(212,146,74,0.60) !important;
+      color: var(--amber-l) !important;
     }
-    .status-dot.active  { background: var(--teal);  box-shadow: 0 0 10px rgba(116,232,210,0.6); }
-    .status-dot.loading { background: var(--gold);  animation: blink 1.1s ease-in-out infinite; }
-    .status-dot.error   { background: #ff7070; }
-
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-        /* ─── MAIN LAYOUT ─── */
-    main {
-      max-width: 1160px;
-      margin: 14px auto 36px;
-      padding: 0 22px;
-      display: grid;
-      gap: 14px;
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 14px;
-    }
-    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
-
-    /* ─── CARDS ─── */
-    .card {
-      border: 1px solid var(--border);
-      background: var(--card);
-      border-radius: var(--r);
-      padding: 22px;
-      backdrop-filter: blur(14px);
-      box-shadow: 0 24px 64px rgba(0,0,0,0.28);
-    }
-    .card-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 0.10em;
-      color: var(--muted);
-      text-transform: uppercase;
-      margin-bottom: 18px;
+    @media (max-width: 680px) {
+      .nav-links { display: none; }
     }
 
-    /* ─── FORM ─── */
-    label {
-      display: block;
-      font-size: 11px;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 7px;
-      margin-top: 16px;
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 0 80px;
+      position: relative;
     }
-    label:first-of-type { margin-top: 0; }
-
-    input[type="text"],
-    input[type="password"],
-    input[type="number"],
-    select,
-    textarea {
-      width: 100%;
-      background: rgba(0,0,0,0.22);
-      border: 1px solid var(--border);
-      border-radius: var(--r-sm);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 300;
-      padding: 10px 12px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: rgba(201,169,110,0.40);
-    }
-    textarea { min-height: 82px; resize: vertical; line-height: 1.55; }
-
-    input[type="range"] {
-      -webkit-appearance: none;
-      height: 3px;
-      background: rgba(255,255,255,0.11);
-      border-radius: 2px;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px; height: 14px;
-      border-radius: 50%;
-      background: var(--gold);
-      cursor: pointer;
-    }
-
-    .row-2 {
+    .hero-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 14px;
+      gap: 60px;
+      align-items: center;
     }
-    @media (max-width: 480px) { .row-2 { grid-template-columns: 1fr; } }
+    @media (max-width: 860px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .hero-visual { order: -1; }
+    }
 
-    /* ─── BUTTONS ─── */
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(212,146,74,0.22);
+      background: var(--amber-g);
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-tag::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--amber);
+      box-shadow: 0 0 8px var(--amber);
     }
 
-    button {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      font-weight: 400;
-      letter-spacing: 0.03em;
-      padding: 10px 18px;
-      border-radius: var(--r-sm);
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-      cursor: pointer;
-      transition: all 0.2s;
+    .hero-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(44px, 6vw, 78px);
+      font-weight: 200;
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.35s forwards;
     }
-    button:hover:not(:disabled) {
-      border-color: rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.10);
+    .hero-title em {
+      font-style: italic;
+      color: var(--amber-l);
     }
-    button:disabled { opacity: 0.35; cursor: not-allowed; }
-
-    .btn-gold {
-      border-color: rgba(201,169,110,0.30);
-      background: linear-gradient(135deg, var(--gold-a), var(--gold-b));
-      color: var(--gold);
-    }
-    .btn-gold:hover:not(:disabled) {
-      border-color: rgba(201,169,110,0.55);
-      background: linear-gradient(135deg, rgba(201,169,110,0.28), rgba(201,169,110,0.14));
-    }
-    .btn-teal {
-      border-color: rgba(116,232,210,0.28);
-      background: linear-gradient(135deg, var(--teal-a), var(--teal-b));
+    .hero-title .line-teal {
       color: var(--teal);
     }
-    .btn-teal:hover:not(:disabled) {
-      border-color: rgba(116,232,210,0.50);
-      background: linear-gradient(135deg, rgba(116,232,210,0.22), rgba(116,232,210,0.10));
+
+    .hero-sub {
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--white-m);
+      max-width: 440px;
+      margin-bottom: 44px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.5s forwards;
+    }
+    @media (max-width: 860px) { .hero-sub { margin: 0 auto 44px; } }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.65s forwards;
+    }
+    @media (max-width: 860px) { .hero-actions { justify-content: center; } }
+
+    .btn-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 32px;
+      border-radius: 999px;
+      background: var(--amber);
+      color: var(--ink);
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      border: none;
+      cursor: none;
+      transition: all 0.25s;
+      box-shadow: 0 0 40px rgba(212,146,74,0.25), 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .btn-main:hover {
+      background: var(--amber-l);
+      box-shadow: 0 0 60px rgba(212,146,74,0.40), 0 4px 24px rgba(0,0,0,0.3);
+      transform: translateY(-2px);
+    }
+    .btn-main svg { transition: transform 0.25s; }
+    .btn-main:hover svg { transform: translateX(3px); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 15px 28px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--white-m);
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      text-decoration: none;
+      cursor: none;
+      transition: all 0.25s;
+    }
+    .btn-ghost:hover {
+      border-color: var(--white-s);
+      color: var(--white);
+      background: var(--white-xs);
     }
 
-    /* ─── VISUAL PANEL ─── */
-    .visual-panel {
-      display: flex;
-      flex-direction: column;
-    }
-    .orb-stage {
-      flex: 1;
-      min-height: 260px;
+    /* ── HERO VISUAL — ORB ── */
+    .hero-visual {
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
-      overflow: hidden;
-      border-radius: 12px;
+      height: 480px;
+      opacity: 0;
+      animation: fadeIn 1.4s 0.4s forwards;
     }
-    .orb-stage::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 70% 60% at 50% 50%, rgba(116,232,210,0.07), transparent 65%),
-        radial-gradient(ellipse 80% 80% at 30% 70%, rgba(155,110,255,0.09), transparent 60%);
-      border-radius: 12px;
-    }
-
-    /* Outer glow rings */
-    .orb-rings {
-      position: absolute;
-      width: 220px; height: 220px;
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    .orb-rings::before, .orb-rings::after {
-      content: '';
-      position: absolute;
-      border-radius: 50%;
-      border: 1px solid rgba(116,232,210,0.07);
-      top: 50%; left: 50%;
-      transform: translate(-50%,-50%);
-      transition: all 3.5s cubic-bezier(0.45,0.05,0.55,0.95);
-    }
-    .orb-rings::before { width: 220px; height: 220px; }
-    .orb-rings::after  { width: 270px; height: 270px; border-color: rgba(155,110,255,0.05); }
-    .orb-rings.inhale::before { width: 250px; height: 250px; border-color: rgba(116,232,210,0.13); }
-    .orb-rings.inhale::after  { width: 310px; height: 310px; border-color: rgba(155,110,255,0.08); }
-
-    .orb {
-      width: 160px; height: 160px;
-      border-radius: 50%;
+    .orb-wrap {
       position: relative;
-      z-index: 1;
-      transform: scale(0.87);
-      transition: transform 3.5s cubic-bezier(0.45,0.05,0.55,0.95);
+      width: 320px;
+      height: 320px;
     }
-    .orb::before {
-      content: '';
+    .orb-core {
       position: absolute;
-      inset: 0;
+      inset: 60px;
       border-radius: 50%;
-      background: radial-gradient(circle at 32% 28%,
-        rgba(255,255,255,0.24),
-        rgba(116,232,210,0.13) 40%,
-        rgba(155,110,255,0.09) 68%,
-        transparent 88%
+      background: radial-gradient(circle at 35% 30%,
+        rgba(255,255,255,0.18),
+        rgba(212,146,74,0.12) 35%,
+        rgba(94,196,176,0.08) 60%,
+        transparent 80%
       );
-      border: 1px solid rgba(255,255,255,0.13);
+      border: 1px solid rgba(255,255,255,0.10);
       box-shadow:
-        0 0 50px rgba(116,232,210,0.14),
-        0 0 90px rgba(155,110,255,0.10),
-        inset 0 0 30px rgba(255,255,255,0.05);
+        0 0 60px rgba(212,146,74,0.15),
+        0 0 120px rgba(94,196,176,0.08),
+        inset 0 0 40px rgba(255,255,255,0.04);
+      animation: breathe 6s ease-in-out infinite;
     }
-    .orb.inhale { transform: scale(1.10); }
-
-    .breath-hint {
+    .orb-ring {
       position: absolute;
-      bottom: 22px;
+      border-radius: 50%;
+      border: 1px solid;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: ringPulse 6s ease-in-out infinite;
+    }
+    .orb-ring:nth-child(2) {
+      width: 220px; height: 220px;
+      border-color: rgba(212,146,74,0.14);
+      animation-delay: 0s;
+    }
+    .orb-ring:nth-child(3) {
+      width: 270px; height: 270px;
+      border-color: rgba(94,196,176,0.09);
+      animation-delay: 0.8s;
+    }
+    .orb-ring:nth-child(4) {
+      width: 315px; height: 315px;
+      border-color: rgba(255,255,255,0.05);
+      animation-delay: 1.6s;
+    }
+
+    .orb-label {
+      position: absolute;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--white-m);
+    }
+    .orb-label.alpha { top: 18%; right: -10%; }
+    .orb-label.theta { bottom: 24%; left: -8%; }
+    .orb-label.gamma { bottom: 14%; right: -5%; }
+
+    .orb-freq {
+      position: absolute;
+      bottom: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 18px;
+    }
+    .freq-dot {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--white-m);
+      white-space: nowrap;
+    }
+    .freq-dot::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .freq-dot.a::before { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+    .freq-dot.t::before { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+    .freq-dot.g::before { background: rgba(200,160,255,0.9); box-shadow: 0 0 6px rgba(200,160,255,0.8); }
+
+    @keyframes breathe {
+      0%, 100% { transform: scale(0.88); }
+      50%       { transform: scale(1.08); }
+    }
+    @keyframes ringPulse {
+      0%, 100% { opacity: 0.6; transform: translate(-50%,-50%) scale(0.96); }
+      50%       { opacity: 1;   transform: translate(-50%,-50%) scale(1.03); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent);
+      margin: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      padding: 42px 0;
+      position: relative;
+      z-index: 2;
+    }
+    .stats-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s, transform 0.6s;
+    }
+    .stat-item.visible { opacity: 1; transform: translateY(0); }
+    .stat-num {
+      font-family: 'Fraunces', serif;
+      font-size: 38px;
+      font-weight: 200;
+      color: var(--amber-l);
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: var(--white-m);
+      letter-spacing: 0.06em;
+    }
+    .stat-sep {
+      width: 1px;
+      height: 48px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    @media (max-width: 600px) {
+      .stat-sep { display: none; }
+      .stats-inner { justify-content: center; gap: 36px; }
+    }
+
+    /* ── SECTION ── */
+    section {
+      position: relative;
+      z-index: 2;
+      padding: 110px 0;
+    }
+    .section-tag {
       font-size: 11px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: var(--muted);
-      z-index: 2;
+      color: var(--amber);
+      margin-bottom: 18px;
       opacity: 0;
-      transition: opacity 0.5s;
+      transform: translateY(14px);
+      transition: opacity 0.6s, transform 0.6s;
     }
-    .breath-hint.on { opacity: 1; }
+    .section-tag.visible { opacity: 1; transform: translateY(0); }
+    .section-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(34px, 4.5vw, 58px);
+      font-weight: 200;
+      line-height: 1.10;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.7s 0.1s, transform 0.7s 0.1s;
+    }
+    .section-title.visible { opacity: 1; transform: translateY(0); }
+    .section-title em { font-style: italic; color: var(--amber-l); }
+    .section-sub {
+      font-size: 16px;
+      line-height: 1.72;
+      color: var(--white-m);
+      max-width: 540px;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.7s 0.2s, transform 0.7s 0.2s;
+    }
+    .section-sub.visible { opacity: 1; transform: translateY(0); }
 
-    /* ─── HUD ─── */
-    .hud {
-      margin-top: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    /* ── HOW IT WORKS ── */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      margin-top: 64px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
     }
-    .hud-row {
+    @media (max-width: 720px) { .how-grid { grid-template-columns: 1fr; } }
+
+    .how-card {
+      background: var(--white-xs);
+      padding: 40px 32px;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s, transform 0.7s, background 0.3s;
+    }
+    .how-card.visible { opacity: 1; transform: translateY(0); }
+    .how-card:hover { background: rgba(255,255,255,0.09); }
+    .how-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--amber), var(--teal));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .how-card:hover::before { opacity: 1; }
+
+    .how-num {
+      font-family: 'Fraunces', serif;
+      font-size: 52px;
+      font-weight: 200;
+      color: rgba(255,255,255,0.06);
+      line-height: 1;
+      margin-bottom: 24px;
+      position: absolute;
+      top: 28px; right: 28px;
+    }
+    .how-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--amber-d);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+      justify-content: center;
+      margin-bottom: 22px;
+      font-size: 22px;
     }
-    .phase-badge {
+    .how-title {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 300;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+    .how-desc {
+      font-size: 14px;
+      line-height: 1.72;
+      color: var(--white-m);
+    }
+    .how-tech {
       display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      padding: 7px 13px;
+      margin-top: 18px;
+      padding: 5px 12px;
       border-radius: 999px;
-      background: rgba(0,0,0,0.28);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--white-m);
+      letter-spacing: 0.06em;
+    }
+
+    /* ── FEATURES ── */
+    .features-wrap {
+      margin-top: 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 720px) { .features-wrap { grid-template-columns: 1fr; } }
+
+    .feat-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 32px;
+      background: var(--white-xs);
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s, transform 0.7s, border-color 0.3s;
+    }
+    .feat-card.visible { opacity: 1; transform: translateY(0); }
+    .feat-card:hover { border-color: rgba(212,146,74,0.25); }
+
+    .feat-card.large {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+      padding: 48px;
+    }
+    @media (max-width: 720px) { .feat-card.large { grid-template-columns: 1fr; } }
+
+    .feat-glow {
+      position: absolute;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(60px);
+      opacity: 0.12;
+    }
+    .feat-glow.amber { background: var(--amber); top: -40px; right: -40px; }
+    .feat-glow.teal  { background: var(--teal);  bottom: -40px; left: -40px; }
+
+    .feat-icon {
+      font-size: 28px;
+      margin-bottom: 18px;
+    }
+    .feat-title {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 300;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+    .feat-desc {
+      font-size: 14px;
+      line-height: 1.72;
+      color: var(--white-m);
+    }
+
+    /* Binaural wave viz */
+    .wave-viz {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 56px;
+      margin-top: 24px;
+    }
+    .wave-bar {
+      flex: 1;
+      border-radius: 2px;
+      animation: waveAnim 1.8s ease-in-out infinite;
+      background: linear-gradient(180deg, var(--amber), var(--teal));
+      opacity: 0.7;
+    }
+    @keyframes waveAnim {
+      0%, 100% { transform: scaleY(0.3); }
+      50%       { transform: scaleY(1); }
+    }
+
+    .phase-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+    .phase-pill {
+      padding: 6px 14px;
+      border-radius: 999px;
       border: 1px solid var(--border);
       font-size: 12px;
-      color: var(--muted);
+      color: var(--white-m);
+      display: flex;
+      align-items: center;
+      gap: 7px;
     }
-    .phase-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--subtle);
-      transition: all 0.4s;
+    .phase-pill .dot {
+      width: 6px; height: 6px; border-radius: 50%;
     }
-    .phase-dot.on { background: var(--teal); box-shadow: 0 0 7px rgba(116,232,210,0.7); }
+    .phase-pill .dot.a { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+    .phase-pill .dot.t { background: var(--teal); box-shadow: 0 0 6px var(--teal); }
+    .phase-pill .dot.g { background: rgba(200,160,255,0.9); }
 
-    .progress-track {
-      flex: 1;
-      height: 3px;
-      background: rgba(255,255,255,0.07);
-      border-radius: 2px;
-      overflow: hidden;
+    /* ── TESTIMONIALS ── */
+    .testimonials {
+      background: var(--ink2);
     }
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--teal), var(--purple));
-      transition: width 0.35s linear;
-      border-radius: 2px;
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 64px;
     }
-    .time-label {
-      font-size: 12px;
-      color: var(--muted);
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 0.04em;
-      white-space: nowrap;
-    }
+    @media (max-width: 720px) { .testi-grid { grid-template-columns: 1fr; } }
 
-    /* ─── AUDIO PREP ─── */
-    .audio-prep-row {
-      display: none;
+    .testi-card {
+      background: var(--white-xs);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s, transform 0.7s;
+    }
+    .testi-card.visible { opacity: 1; transform: translateY(0); }
+
+    .testi-stars {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 16px;
+    }
+    .testi-stars span { color: var(--amber); font-size: 13px; }
+    .testi-text {
+      font-size: 14px;
+      line-height: 1.72;
+      color: var(--white-m);
+      margin-bottom: 22px;
+      font-style: italic;
+    }
+    .testi-author {
+      display: flex;
       align-items: center;
       gap: 12px;
-      margin-top: 12px;
     }
-    .audio-prep-row.on { display: flex; }
-    .prep-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
-    .prep-track {
-      flex: 1;
-      height: 3px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 2px;
-      overflow: hidden;
+    .testi-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--amber-d), var(--teal-a));
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
     }
-    .prep-fill {
-      height: 100%;
-      background: var(--gold);
-      border-radius: 2px;
-      transition: width 0.35s ease;
-    }
-    .prep-pct { font-size: 12px; color: var(--muted); width: 34px; text-align: right; }
+    .testi-name { font-size: 13px; font-weight: 500; }
+    .testi-role { font-size: 11px; color: var(--white-m); }
 
-    /* ─── SCRIPT SECTION ─── */
-    .script-section {
-      display: none;
+    /* ── CTA SECTION ── */
+    .cta-section {
+      padding: 140px 0;
+      text-align: center;
     }
-    .script-section.on { display: block; }
-    .script-header {
+    .cta-inner {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .cta-glow-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 52px;
+    }
+    .cta-orb {
+      width: 160px; height: 160px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%,
+        rgba(255,255,255,0.16),
+        rgba(212,146,74,0.10) 40%,
+        transparent 75%
+      );
+      border: 1px solid rgba(212,146,74,0.18);
+      box-shadow: 0 0 80px rgba(212,146,74,0.18), 0 0 140px rgba(94,196,176,0.08);
+      animation: breathe 5s ease-in-out infinite;
+      margin: 0 auto;
+    }
+    .cta-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(38px, 5vw, 64px);
+      font-weight: 200;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.7s, transform 0.7s;
+    }
+    .cta-title.visible { opacity: 1; transform: translateY(0); }
+    .cta-title em { font-style: italic; color: var(--amber-l); }
+
+    .cta-sub {
+      font-size: 16px;
+      color: var(--white-m);
+      line-height: 1.7;
+      margin-bottom: 48px;
+      opacity: 0;
+      transition: opacity 0.7s 0.15s, transform 0.7s 0.15s;
+      transform: translateY(14px);
+    }
+    .cta-sub.visible { opacity: 1; transform: translateY(0); }
+
+    .cta-actions {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.7s 0.25s, transform 0.7s 0.25s;
+    }
+    .cta-actions.visible { opacity: 1; transform: translateY(0); }
+
+    .cta-note {
+      margin-top: 22px;
+      font-size: 12px;
+      color: var(--white-m);
+      opacity: 0.7;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 42px 0;
+      position: relative;
+      z-index: 2;
+    }
+    .footer-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 14px;
+      gap: 20px;
+      flex-wrap: wrap;
     }
-    .script-body {
-      background: rgba(0,0,0,0.20);
-      border: 1px dashed rgba(255,255,255,0.12);
-      border-radius: var(--r-sm);
-      padding: 18px;
-      max-height: 300px;
-      overflow-y: auto;
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 15.5px;
-      line-height: 1.72;
-      color: rgba(255,255,255,0.75);
-      white-space: pre-wrap;
-      letter-spacing: 0.01em;
+    .footer-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 300;
+      color: var(--white-m);
     }
-    .script-body::-webkit-scrollbar { width: 3px; }
-    .script-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 2px; }
-
-    /* ─── TIPS ─── */
-    .tip {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.6;
-      margin-top: 14px;
-      padding-left: 10px;
-      border-left: 2px solid rgba(201,169,110,0.28);
+    .footer-logo span { color: var(--amber); }
+    .footer-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
     }
-    .safety {
-      font-size: 11px;
-      color: rgba(255,100,100,0.55);
-      line-height: 1.55;
-      margin-top: 10px;
+    .footer-links a {
+      font-size: 12px;
+      color: var(--white-m);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--white); }
+    .footer-copy {
+      font-size: 12px;
+      color: rgba(255,255,255,0.28);
     }
 
-    /* ─── SEPARATOR ─── */
-    .sep {
-      height: 1px;
-      background: var(--border);
-      margin: 14px 0;
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s, transform 0.7s;
     }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: rgba(212,146,74,0.3); border-radius: 2px; }
   </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- CUSTOM CURSOR -->
+<div class="cursor" id="cursorDot" style="top:0;left:0">
+  <div class="cursor-dot"></div>
+</div>
+<div class="cursor" id="cursorRing" style="top:0;left:0">
+  <div class="cursor-ring"></div>
+</div>
 
+<!-- CANVAS BG -->
+<canvas id="bgCanvas"></canvas>
 
-<header>
-  <div class="brand">
-    <span class="brand-name">Flow Hypnose</span>
-    <span class="brand-sub">Alpha · Theta · Gamma</span>
-  </div>
-  <div class="status-pill" id="statusPill">
-    <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">Prêt</span>
-  </div>
-</header>
-
-<!-- MAIN -->
-<main>
-  <div class="grid-2">
-
-    <!-- LEFT — CONFIG -->
-    <section class="card">
-      <div class="card-title">Configuration</div>
-
-      <label>Thème / intention</label>
-      <input type="text" id="theme" placeholder="Ex : abondance financière, confiance en soi, lâcher-prise…" value="Abondance financière">
-
-      <label>Contexte (optionnel)</label>
-      <textarea id="context" placeholder="Ce que tu veux ressentir, ce qui te freine, tes objectifs spécifiques…"></textarea>
-
-      <div class="row-2">
-        <div>
-          <label>Durée de séance</label>
-          <select id="duration">
-            <option value="10">10 min — démo</option>
-            <option value="15">15 min</option>
-            <option value="20" selected>20 min — recommandé</option>
-            <option value="25">25 min</option>
-          </select>
-        </div>
-        <div>
-          <label>Style de guidance</label>
-          <select id="tone">
-            <option value="ericksonien" selected>Ericksonien (métaphores)</option>
-            <option value="directif">Directif (précis, clair)</option>
-            <option value="contemplatif">Contemplatif (poétique)</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row-2">
-        <div>
-          <label>Volume binaural</label>
-          <input type="range" id="volume" min="0" max="1" step="0.01" value="0.18">
-        </div>
-        <div>
-          <label>Cycle respiratoire</label>
-          <select id="breathRate">
-            <option value="8">8 s — standard</option>
-            <option value="10" selected>10 s — profond</option>
-            <option value="12">12 s — très lent</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="row-2">
-        <div>
-          <label>Vitesse de la voix — <span id="speedVal">0.80×</span></label>
-          <input type="range" id="voiceSpeed" min="0.7" max="1.1" step="0.05" value="0.80"
-            oninput="$('speedVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px">
-            <span>Lent</span><span>Normal</span><span>Rapide</span>
-          </div>
-        </div>
-        <div>
-          <label>Voix ElevenLabs</label>
-          <select id="elevenVoice">
-            <optgroup label="Voix féminines">
-              <option value="21m00Tcm4TlvDq8ikWAM">Rachel — Douce & posée</option>
-              <option value="EXAVITQu4vr4xnSDxMaL">Bella — Chaleureuse</option>
-              <option value="XB0fDUnXU5powFXDhCwa">Charlotte — Sereine</option>
-              <option value="XrExE9yKIg1WjnnlVkGX">Matilda — Apaisante</option>
-              <option value="9BWtsMINqrJLrRacOk9x">Sarah — Naturelle</option>
-            </optgroup>
-            <optgroup label="Voix masculines">
-              <option value="JBFqnCBsd6RMkjVDRZzb">George — Grave & posé</option>
-              <option value="onwK4e9ZLuTAKqWW03F9">Daniel — Chaleureux</option>
-              <option value="ErXwobaYiN019PkySvjV">Antoni — Profond</option>
-            </optgroup>
-          </select>
-        </div>
-      </div>
-
-      <div class="sep"></div>
-
-      <!-- ACTIONS -->
-      <div class="btn-row">
-        <button class="btn-gold" id="btnGenerate">① Générer le script</button>
-        <button id="btnPrepAudio" disabled>② Préparer l'audio</button>
-      </div>
-
-      <div class="audio-prep-row" id="audioPrepRow">
-        <span class="prep-label">Synthèse vocale</span>
-        <div class="prep-track"><div class="prep-fill" id="prepFill" style="width:0%"></div></div>
-        <span class="prep-pct" id="prepPct">0 %</span>
-      </div>
-
-      <div class="btn-row" style="margin-top:10px">
-        <button class="btn-teal" id="btnPlay" disabled>▶ Lancer la séance</button>
-        <button id="btnStop" disabled>■ Arrêter</button>
-        <button id="btnReplay" disabled style="font-size:12px">↺ Rejouer</button>
-      </div>
-
-      <p class="tip">Casque recommandé pour les binaural beats. Lance la séance une fois que tu es installé confortablement, dans un endroit calme.</p>
-      <p class="safety">⚠ Ne pas utiliser en conduisant. Déconseillé en cas d'épilepsie ou de trouble dissociatif non suivi.</p>
-    </section>
-
-    <!-- RIGHT — VISUAL -->
-    <section class="card visual-panel">
-      <div class="card-title">Visualisation</div>
-
-      <div class="orb-stage" id="orbStage">
-        <div class="orb-rings" id="orbRings"></div>
-        <div class="orb" id="orb"></div>
-        <div class="breath-hint" id="breathHint">Inspire…</div>
-      </div>
-
-      <div class="hud">
-        <div class="hud-row">
-          <div class="phase-badge">
-            <div class="phase-dot" id="phaseDot"></div>
-            <span id="phaseLabel">—</span>
-          </div>
-          <span id="freqLabel" style="font-size:12px;color:var(--muted)">— Hz Δ</span>
-        </div>
-        <div class="hud-row">
-          <div class="progress-track">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
-          <span class="time-label" id="timeLabel">00:00 / 00:00</span>
-        </div>
-      </div>
-    </section>
-  </div>
-
-  <!-- SCRIPT SECTION -->
-  <section class="card script-section" id="scriptSection">
-    <div class="script-header">
-      <div class="card-title" style="margin:0">Script généré — lu par ElevenLabs</div>
-      <button id="btnCopy" style="font-size:11px;padding:6px 12px">Copier</button>
+<!-- ── NAV ── -->
+<nav id="nav">
+  <div class="container">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">Flow<span>.</span>Hypnose</a>
+      <ul class="nav-links">
+        <li><a href="#comment">Comment ça marche</a></li>
+        <li><a href="#features">Fonctionnalités</a></li>
+        <li><a href="#avis">Avis</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="https://flow-hypnose.vercel.app/" target="_blank" class="nav-cta">Lancer l'app →</a></li>
+      </ul>
     </div>
-    <div class="script-body" id="scriptBox">—</div>
-  </section>
-</main>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-tag">Voix générée · Binaural beats · Script sur mesure</div>
+        <h1 class="hero-title">
+          Entre en état<br>
+          de <em>flow</em><br>
+          <span class="line-teal">profond.</span>
+        </h1>
+        <p class="hero-sub">
+          Séances d'auto-hypnose conçues sur mesure. Flow Hypnose génère le script, orchestre la voix et les binaural beats Alpha → Theta → Gamma dans un seul moment continu.
+        </p>
+        <div class="hero-actions">
+          <a href="https://flow-hypnose.vercel.app/" target="_blank" class="btn-main">
+            Commencer ma séance
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <a href="#comment" class="btn-ghost">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M5.5 7l2 2 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+            Comment ça marche
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="orb-wrap">
+          <div class="orb-ring"></div>
+          <div class="orb-ring"></div>
+          <div class="orb-ring"></div>
+          <div class="orb-core"></div>
+          <span class="orb-label alpha">Alpha · 10 Hz</span>
+          <span class="orb-label theta">Theta · 6 Hz</span>
+          <span class="orb-label gamma">Gamma · 40 Hz</span>
+          <div class="orb-freq">
+            <div class="freq-dot a">Relâchement</div>
+            <div class="freq-dot t">Imaginaire</div>
+            <div class="freq-dot g">Insight</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DIVIDER ── -->
+<div class="divider"></div>
+
+<!-- ── STATS ── -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-inner">
+      <div class="stat-item reveal">
+        <span class="stat-num">20 min</span>
+        <span class="stat-label">Séance recommandée</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item reveal">
+        <span class="stat-num">4 phases</span>
+        <span class="stat-label">Alpha · Theta · Gamma</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item reveal">
+        <span class="stat-num">∞ thèmes</span>
+        <span class="stat-label">Générés par Flow Hypnose</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item reveal">
+        <span class="stat-num">8 voix</span>
+        <span class="stat-label">Voix haute qualité</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="comment">
+  <div class="container">
+    <div class="section-tag reveal">Processus</div>
+    <h2 class="section-title reveal">Trois étapes vers le <em>flow</em></h2>
+    <p class="section-sub reveal">Pas de friction. Tu arrives, tu choisis ton intention, Flow Hypnose fait le reste.</p>
+
+    <div class="how-grid">
+      <div class="how-card reveal">
+        <span class="how-num">01</span>
+        <div class="how-icon">✦</div>
+        <h3 class="how-title">Définis ton intention</h3>
+        <p class="how-desc">Thème libre — abondance, confiance, focus, créativité, lâcher-prise. Ajoute un contexte pour personnaliser encore plus finement.</p>
+        <span class="how-tech">Moteur génératif</span>
+      </div>
+      <div class="how-card reveal" style="transition-delay:0.12s">
+        <span class="how-num">02</span>
+        <div class="how-icon">◎</div>
+        <h3 class="how-title">Flow Hypnose génère & orchestre</h3>
+        <p class="how-desc">Flow Hypnose rédige un script d'hypnose structuré en 4 mouvements et le restitue avec une voix douce, calibrée, lente.</p>
+        <span class="how-tech">Synthèse vocale</span>
+      </div>
+      <div class="how-card reveal" style="transition-delay:0.24s">
+        <span class="how-num">03</span>
+        <div class="how-icon">▷</div>
+        <h3 class="how-title">Lance & laisse venir</h3>
+        <p class="how-desc">Voix, binaural beats et respiration animée démarrent en synchronisation parfaite. Tu n'as plus qu'à fermer les yeux.</p>
+        <span class="how-tech">Web Audio API</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features" style="background: var(--ink2); padding: 110px 0;">
+  <div class="container">
+    <div class="section-tag reveal">Fonctionnalités</div>
+    <h2 class="section-title reveal">Conçu pour <em>l'état modifié</em></h2>
+
+    <div class="features-wrap">
+
+      <!-- Large card — binaural -->
+      <div class="feat-card large reveal">
+        <div class="feat-glow amber"></div>
+        <div>
+          <div class="feat-icon">◈</div>
+          <h3 class="feat-title">Binaural beats adaptatifs</h3>
+          <p class="feat-desc">Les fréquences évoluent progressivement au fil de la séance pour accompagner chaque phase de l'induction hypnotique.</p>
+          <div class="phase-pills">
+            <div class="phase-pill"><span class="dot a"></span>Alpha 10 Hz — Relâchement</div>
+            <div class="phase-pill"><span class="dot t"></span>Theta 6 Hz — Imaginaire profond</div>
+            <div class="phase-pill"><span class="dot g"></span>Gamma 40 Hz — Insight & ancrage</div>
+          </div>
+        </div>
+        <div>
+          <div class="wave-viz" id="waveViz"></div>
+          <p style="font-size:12px;color:var(--white-m);margin-top:14px;line-height:1.6">
+            Casque obligatoire pour l'effet binaural — les deux oreilles reçoivent des fréquences légèrement différentes, créant un battement perçu par le cerveau.
+          </p>
+        </div>
+      </div>
+
+      <div class="feat-card reveal" style="transition-delay:0.1s">
+        <div class="feat-glow teal"></div>
+        <div class="feat-icon">◇</div>
+        <h3 class="feat-title">Script sur mesure</h3>
+        <p class="feat-desc">Flow Hypnose génère un script unique à chaque séance — style ericksonien, directif ou contemplatif — calibré pour être restitué lentement avec des pauses naturelles.</p>
+      </div>
+
+      <div class="feat-card reveal" style="transition-delay:0.2s">
+        <div class="feat-glow amber"></div>
+        <div class="feat-icon">◉</div>
+        <h3 class="feat-title">Voix apaisante Flow Hypnose</h3>
+        <p class="feat-desc">8 timbres de voix au choix — doux, grave, chaleureux. Vitesse et volume réglables. La voix et les binaural beats démarrent en synchronisation parfaite, pilotés par Flow Hypnose.</p>
+      </div>
+
+      <div class="feat-card reveal" style="transition-delay:0.1s">
+        <div class="feat-icon">◎</div>
+        <h3 class="feat-title">Respiration guidée</h3>
+        <p class="feat-desc">L'orbe animé suit le cycle respiratoire de 8 à 12 secondes. Inspiration et expiration sont synchronisées avec la phase de la séance.</p>
+      </div>
+
+      <div class="feat-card reveal" style="transition-delay:0.2s">
+        <div class="feat-icon">◈</div>
+        <h3 class="feat-title">Sécurisé & privé</h3>
+        <p class="feat-desc">Tes clés API restent côté serveur Vercel. Aucune donnée personnelle collectée. Le script généré n'est jamais persisté.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section id="avis">
+  <div class="container">
+    <div class="section-tag reveal">Retours</div>
+    <h2 class="section-title reveal">Ce qu'ils en <em>ressentent</em></h2>
+
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testi-text">"Je faisais de la méditation depuis des années mais Flow Hypnose m'a fait descendre à un niveau que je n'atteignais jamais seule. Le script est bluffant de précision."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">🌿</div>
+          <div>
+            <div class="testi-name">Camille R.</div>
+            <div class="testi-role">Coach, Lyon</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card reveal" style="transition-delay:0.12s">
+        <div class="testi-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testi-text">"Utilisé sur le thème 'focus et productivité' avant une grande présentation. Les binaural beats et la voix créent une bulle de concentration que je n'avais pas anticipée."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">⚡</div>
+          <div>
+            <div class="testi-name">Thomas M.</div>
+            <div class="testi-role">Entrepreneur, Paris</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testi-card reveal" style="transition-delay:0.24s">
+        <div class="testi-stars">
+          <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+        </div>
+        <p class="testi-text">"Je m'endormais toujours pendant les méditations guidées YouTube. Là, les binaurales me maintiennent dans un état conscient mais très profond. Une vraie différence."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">🌊</div>
+          <div>
+            <div class="testi-name">Léa D.</div>
+            <div class="testi-role">Kinésithérapeute, Bordeaux</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-inner">
+      <div class="cta-orb reveal"></div>
+      <h2 class="cta-title reveal" style="margin-top:40px">
+        Prêt à entrer<br>en <em>état de flow</em> ?
+      </h2>
+      <p class="cta-sub reveal">
+        Choisis ton intention. Flow Hypnose fait le reste.<br>Casque sur les oreilles, yeux fermés.
+      </p>
+      <div class="cta-actions reveal">
+        <a href="https://flow-hypnose.vercel.app/" target="_blank" class="btn-main">
+          Lancer l'application
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+      <p class="cta-note">Fonctionne sur Chrome · Android & Desktop · Casque recommandé</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ── CONTACT ── -->
+<section id="contact" style="background: var(--ink2); padding: 110px 0;">
+  <div class="container">
+    <div style="max-width:580px; margin: 0 auto; text-align: center;">
+      <div class="section-tag reveal" style="justify-content:center; display:inline-flex;">Contact</div>
+      <h2 class="section-title reveal" style="text-align:center;">Une question,<br>une <em>idée</em> ?</h2>
+      <p class="section-sub reveal" style="margin: 0 auto 52px; text-align:center;">
+        Retour d'expérience, suggestion, collaboration — chaque message est lu et répondu personnellement.
+      </p>
+
+      <div class="reveal" style="
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 48px 40px;
+        background: var(--white-xs);
+        position: relative;
+        overflow: hidden;
+      ">
+        <div style="
+          position:absolute; width:240px; height:240px; border-radius:50%;
+          background: var(--amber); filter: blur(90px); opacity:0.07;
+          top:-60px; right:-60px; pointer-events:none;
+        "></div>
+
+        <div style="font-size:48px; margin-bottom:24px;">✦</div>
+
+        <p style="font-size:15px; color:var(--white-m); line-height:1.72; margin-bottom:36px;">
+          Tu peux nous écrire directement par email. Répons garantie sous 48h.
+        </p>
+
+        <a href="mailto:VOTRE_EMAIL@gmail.com" class="btn-main" style="display:inline-flex; text-decoration:none;">
+          Nous écrire
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 4l6 5 6-5M2 4h12v9H2V4z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+
+        <div style="
+          margin-top: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 24px;
+          flex-wrap: wrap;
+        ">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--white-m);">
+            <span style="color:var(--teal)">◎</span> Réponse sous 48h
+          </div>
+          <div style="width:1px;height:16px;background:var(--border);"></div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--white-m);">
+            <span style="color:var(--amber)">◈</span> Suggestions bienvenues
+          </div>
+          <div style="width:1px;height:16px;background:var(--border);"></div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--white-m);">
+            <span style="color:var(--amber-l)">◇</span> Collaborations ouvertes
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">Flow<span>.</span>Hypnose</div>
+      <ul class="footer-links">
+        <li><a href="#comment">Comment ça marche</a></li>
+        <li><a href="#features">Fonctionnalités</a></li>
+        <li><a href="https://flow-hypnose.vercel.app/" target="_blank">Ouvrir l'app</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <div class="footer-copy">© 2026 Flow Hypnose · Conçu avec intention</div>
+    </div>
+  </div>
+</footer>
 
 <script>
-/* ─────────────────────────────────────────────
-   UTILS
-───────────────────────────────────────────── */
-const $ = id => document.getElementById(id);
-const mmss = s => {
-  s = Math.max(0, Math.floor(s));
-  return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
-};
-const clamp = (x,a,b) => Math.max(a, Math.min(b, x));
+/* ── CUSTOM CURSOR ── */
+const dot  = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function moveCursor() {
+  rx += (mx - rx) * 0.14;
+  ry += (my - ry) * 0.14;
+  dot.style.left  = mx + 'px';
+  dot.style.top   = my + 'px';
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(moveCursor);
+})();
 
-function setStatus(text, mode = 'idle') {
-  $('statusText').textContent = text;
-  const d = $('statusDot');
-  d.className = 'status-dot';
-  if (mode === 'active')  d.classList.add('active');
-  if (mode === 'loading') d.classList.add('loading');
-  if (mode === 'error')   d.classList.add('error');
+/* ── NAV SCROLL ── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+/* ── CANVAS PARTICLES ── */
+const canvas = document.getElementById('bgCanvas');
+const ctx    = canvas.getContext('2d');
+let W, H, particles = [];
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function createParticle() {
+  return {
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 1.4 + 0.3,
+    vx: (Math.random() - 0.5) * 0.18,
+    vy: (Math.random() - 0.5) * 0.18,
+    alpha: Math.random() * 0.45 + 0.05,
+    color: Math.random() > 0.6
+      ? `rgba(212,146,74,`
+      : Math.random() > 0.5
+        ? `rgba(94,196,176,`
+        : `rgba(255,255,255,`
+  };
 }
 
-/* ─────────────────────────────────────────────
-   SETTINGS PERSISTENCE
-───────────────────────────────────────────── */
-function toggleSettings() {
-  const panel = $('settingsPanel');
-  const btn   = $('settingsBtn');
-  panel.classList.toggle('open');
-  btn.classList.toggle('open');
+for (let i = 0; i < 90; i++) particles.push(createParticle());
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  for (const p of particles) {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = p.color + p.alpha + ')';
+    ctx.fill();
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < -4) p.x = W + 4;
+    if (p.x > W + 4) p.x = -4;
+    if (p.y < -4) p.y = H + 4;
+    if (p.y > H + 4) p.y = -4;
+  }
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+/* ── WAVE BARS ── */
+const waveViz = document.getElementById('waveViz');
+for (let i = 0; i < 28; i++) {
+  const bar = document.createElement('div');
+  bar.className = 'wave-bar';
+  const h = Math.random() * 70 + 15;
+  bar.style.cssText = `height:${h}%;animation-delay:${(i * 0.07).toFixed(2)}s;animation-duration:${(1.4 + Math.random() * 0.8).toFixed(2)}s`;
+  waveViz.appendChild(bar);
 }
 
-/* ─────────────────────────────────────────────
-   CLAUDE API — SCRIPT GENERATION
-───────────────────────────────────────────── */
-async function generateScript({ theme, context, duration, tone }) {
-  const res = await fetch('/api/generate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ theme, context, duration, tone })
+/* ── SCROLL REVEAL ── */
+const revealEls = document.querySelectorAll(
+  '.reveal, .section-tag, .section-title, .section-sub, .how-card, .feat-card, .testi-card, .stat-item, .cta-title, .cta-sub, .cta-actions, .cta-orb'
+);
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || `Erreur serveur ${res.status}`);
-  return data.script || '';
-}
+}, { threshold: 0.12 });
 
-/* ─────────────────────────────────────────────
-   ELEVENLABS — TTS + AUDIO BUFFER
-───────────────────────────────────────────── */
-function splitIntoChunks(text, maxLen = 1800) {
-  // Split at sentence boundaries
-  const parts = text.split(/(?<=[.!?…])\s+/);
-  const chunks = [];
-  let cur = '';
-  for (const p of parts) {
-    if (cur && (cur + ' ' + p).length > maxLen) {
-      chunks.push(cur.trim());
-      cur = p;
-    } else {
-      cur = cur ? cur + ' ' + p : p;
-    }
-  }
-  if (cur.trim()) chunks.push(cur.trim());
-  return chunks;
-}
+revealEls.forEach(el => observer.observe(el));
 
-function concatAudioBuffers(ctx, buffers) {
-  if (!buffers.length) return null;
-  const ch = buffers[0].numberOfChannels;
-  const sr = buffers[0].sampleRate;
-  const total = buffers.reduce((s, b) => s + b.length, 0);
-  const out = ctx.createBuffer(ch, total, sr);
-  let offset = 0;
-  for (const buf of buffers) {
-    for (let c = 0; c < ch; c++) {
-      out.getChannelData(c).set(buf.getChannelData(c), offset);
-    }
-    offset += buf.length;
-  }
-  return out;
-}
-
-async function buildElevenLabsBuffer(script, voiceId, speed = 0.80) {
-  const chunks = splitIntoChunks(script, 1800);
-  const decoded = [];
-
-  for (let i = 0; i < chunks.length; i++) {
-    const pct = Math.round((i / chunks.length) * 92);
-    $('prepFill').style.width = pct + '%';
-    $('prepPct').textContent   = pct + ' %';
-
-    const res = await fetch('/api/tts', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: chunks[i], voiceId, speed })
-    });
-
-    if (!res.ok) {
-      const e = await res.json().catch(() => ({}));
-      throw new Error(e.error || `TTS erreur ${res.status}`);
-    }
-
-    const ab = await res.arrayBuffer();
-    ensureAudio();
-    const buf = await audioCtx.decodeAudioData(ab.slice(0));
-    decoded.push(buf);
-  }
-
-  $('prepFill').style.width = '100%';
-  $('prepPct').textContent   = '100 %';
-
-  return concatAudioBuffers(audioCtx, decoded);
-}
-
-/* ─────────────────────────────────────────────
-   WEB AUDIO — BINAURAL BEATS
-───────────────────────────────────────────── */
-let audioCtx = null;
-let leftOsc = null, rightOsc = null;
-let binauralMerger = null, lGain = null, rGain = null;
-let masterBinauralGain = null;
-let voiceGainNode = null;
-let isRunning = false;
-
-const CARRIER = 200; // Hz
-
-function ensureAudio() {
-  if (audioCtx) return;
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-  // Binaural chain
-  masterBinauralGain = audioCtx.createGain();
-  masterBinauralGain.gain.value = parseFloat($('volume').value) || 0.18;
-  masterBinauralGain.connect(audioCtx.destination);
-
-  lGain = audioCtx.createGain(); lGain.gain.value = 0.92;
-  rGain = audioCtx.createGain(); rGain.gain.value = 0.92;
-
-  binauralMerger = audioCtx.createChannelMerger(2);
-  lGain.connect(binauralMerger, 0, 0);
-  rGain.connect(binauralMerger, 0, 1);
-  binauralMerger.connect(masterBinauralGain);
-
-  leftOsc  = audioCtx.createOscillator();
-  rightOsc = audioCtx.createOscillator();
-  leftOsc.type  = rightOsc.type  = 'sine';
-  leftOsc.connect(lGain);
-  rightOsc.connect(rGain);
-  leftOsc.frequency.value  = CARRIER;
-  rightOsc.frequency.value = CARRIER + 10;
-  leftOsc.start();
-  rightOsc.start();
-
-  // Voice chain (separate, always at full volume)
-  voiceGainNode = audioCtx.createGain();
-  voiceGainNode.gain.value = 1.0;
-  voiceGainNode.connect(audioCtx.destination);
-}
-
-function setBinaural(beatHz, rampSec = 2.0) {
-  if (!audioCtx) return;
-  const now = audioCtx.currentTime;
-  leftOsc.frequency.cancelScheduledValues(now);
-  rightOsc.frequency.cancelScheduledValues(now);
-  leftOsc.frequency.setValueAtTime(leftOsc.frequency.value, now);
-  rightOsc.frequency.setValueAtTime(rightOsc.frequency.value, now);
-  leftOsc.frequency.linearRampToValueAtTime(CARRIER, now + rampSec);
-  rightOsc.frequency.linearRampToValueAtTime(CARRIER + beatHz, now + rampSec);
-}
-
-$('volume').addEventListener('input', () => {
-  if (masterBinauralGain) masterBinauralGain.gain.value = parseFloat($('volume').value) || 0.18;
-});
-
-/* ─────────────────────────────────────────────
-   BREATHING ANIMATION
-───────────────────────────────────────────── */
-let breathTimer = null;
-let inhaling = true;
-
-function startBreathing() {
-  const cycle = parseInt($('breathRate').value) || 10;
-  const half  = Math.max(3, Math.floor(cycle / 2));
-  const orb   = $('orb');
-  const rings = $('orbRings');
-  const hint  = $('breathHint');
-
-  inhaling = true;
-  orb.classList.add('inhale');
-  rings.classList.add('inhale');
-  hint.textContent = 'Inspire…';
-  hint.classList.add('on');
-
-  breathTimer = setInterval(() => {
-    inhaling = !inhaling;
-    orb.classList.toggle('inhale',   inhaling);
-    rings.classList.toggle('inhale', inhaling);
-    hint.textContent = inhaling ? 'Inspire…' : 'Expire…';
-  }, half * 1000);
-}
-
-function stopBreathing() {
-  if (breathTimer) { clearInterval(breathTimer); breathTimer = null; }
-  $('orb').classList.remove('inhale');
-  $('orbRings').classList.remove('inhale');
-  $('breathHint').classList.remove('on');
-}
-
-/* ─────────────────────────────────────────────
-   SESSION PHASES
-───────────────────────────────────────────── */
-const PHASES = [
-  { label: 'Alpha — Relâchement',      beat: 10.0, from: 0.00 },
-  { label: 'Alpha → Theta',            beat:  8.0, from: 0.25 },
-  { label: 'Theta — Visualisation',    beat:  6.0, from: 0.50 },
-  { label: 'Gamma — Insight & ancrage',beat: 40.0, from: 0.85 },
-];
-
-function phaseAt(progress) {
-  for (let i = PHASES.length - 1; i >= 0; i--)
-    if (progress >= PHASES[i].from) return PHASES[i];
-  return PHASES[0];
-}
-
-/* ─────────────────────────────────────────────
-   SESSION LIFECYCLE
-───────────────────────────────────────────── */
-let sessionTimer = null;
-let voiceSource  = null;
-let currentScript  = null;
-let preparedBuffer = null;
-
-async function startSession() {
-  ensureAudio();
-  await audioCtx.resume();
-  if (masterBinauralGain) masterBinauralGain.gain.value = parseFloat($('volume').value) || 0.18;
-
-  const totalSecs = parseInt($('duration').value) * 60;
-  const t0 = Date.now();
-
-  // ── Start voice (synchronized with binaural via same AudioContext)
-  if (preparedBuffer) {
-    voiceSource = audioCtx.createBufferSource();
-    voiceSource.buffer = preparedBuffer;
-    voiceSource.connect(voiceGainNode);
-    voiceSource.start(0);
-    voiceSource.onended = () => { voiceSource = null; };
-  }
-
-  // ── Start binaural at alpha
-  const p0 = PHASES[0];
-  setBinaural(p0.beat, 0.5);
-  $('phaseDot').classList.add('on');
-  $('phaseLabel').textContent = p0.label;
-  $('freqLabel').textContent  = `${p0.beat} Hz Δ`;
-
-  // ── Start breathing
-  startBreathing();
-
-  // ── Timeline ticker
-  isRunning = true;
-  let lastPhaseLabel = p0.label;
-  $('timeLabel').textContent = `00:00 / ${mmss(totalSecs)}`;
-
-  sessionTimer = setInterval(() => {
-    const elapsed  = (Date.now() - t0) / 1000;
-    const progress = clamp(elapsed / totalSecs, 0, 1);
-
-    $('progressFill').style.width  = (progress * 100).toFixed(2) + '%';
-    $('timeLabel').textContent     = `${mmss(elapsed)} / ${mmss(totalSecs)}`;
-
-    const phase = phaseAt(progress);
-    if (phase.label !== lastPhaseLabel) {
-      lastPhaseLabel = phase.label;
-      setBinaural(phase.beat, 2.5);
-      $('phaseLabel').textContent = phase.label;
-      $('freqLabel').textContent  = `${phase.beat} Hz Δ`;
-    }
-
-    if (elapsed >= totalSecs) stopAll(true);
-  }, 300);
-
-  isRunning = true;
-  setStatus('Séance en cours', 'active');
-  $('btnStop').disabled    = false;
-  $('btnPlay').disabled    = true;
-  $('btnReplay').disabled  = true;
-  $('btnGenerate').disabled    = true;
-  $('btnPrepAudio').disabled   = true;
-}
-
-function stopAll(auto = false) {
-  if (sessionTimer) { clearInterval(sessionTimer); sessionTimer = null; }
-  stopBreathing();
-
-  if (voiceSource) { try { voiceSource.stop(); } catch(e){} voiceSource = null; }
-
-  // Fade binaural out
-  if (audioCtx && masterBinauralGain) {
-    const now = audioCtx.currentTime;
-    masterBinauralGain.gain.cancelScheduledValues(now);
-    masterBinauralGain.gain.setValueAtTime(masterBinauralGain.gain.value, now);
-    masterBinauralGain.gain.linearRampToValueAtTime(0.0001, now + 1.8);
-    setTimeout(() => {
-      if (masterBinauralGain) masterBinauralGain.gain.value = parseFloat($('volume').value) || 0.18;
-    }, 2200);
-  }
-
-  isRunning = false;
-  $('btnStop').disabled    = true;
-  $('btnPlay').disabled    = !preparedBuffer;
-  $('btnReplay').disabled  = !preparedBuffer;
-  $('btnGenerate').disabled    = false;
-  $('btnPrepAudio').disabled   = !currentScript;
-  $('phaseDot').classList.remove('on');
-  $('phaseLabel').textContent = '—';
-  $('freqLabel').textContent  = '— Hz Δ';
-  $('progressFill').style.width = '0%';
-  $('timeLabel').textContent  = '00:00 / 00:00';
-
-  setStatus(auto ? 'Séance terminée ✓' : 'Arrêté', 'idle');
-}
-
-/* ─────────────────────────────────────────────
-   BUTTON WIRING
-───────────────────────────────────────────── */
-
-// ① Generate script via Claude
-$('btnGenerate').addEventListener('click', async () => {
-  const theme = $('theme').value.trim();
-  if (!theme) { alert('Précise un thème pour la séance.'); return; }
-
-  setStatus('Génération du script…', 'loading');
-  $('btnGenerate').disabled = true;
-  $('btnPrepAudio').disabled = true;
-  $('btnPlay').disabled = true;
-  preparedBuffer = null;
-  currentScript  = null;
-  $('scriptSection').classList.remove('on');
-
-  try {
-    const script = await generateScript({
-      theme,
-      context:  $('context').value.trim(),
-      duration: parseInt($('duration').value),
-      tone:     $('tone').value
-    });
-
-    currentScript = script;
-    $('scriptBox').textContent = script;
-    $('scriptSection').classList.add('on');
-    $('btnPrepAudio').disabled = false;
-    setStatus('Script prêt — étape ②', 'idle');
-
-  } catch(e) {
-    setStatus('Erreur : ' + e.message, 'error');
-    console.error(e);
-  } finally {
-    $('btnGenerate').disabled = false;
-  }
-});
-
-// ② Prepare ElevenLabs audio
-$('btnPrepAudio').addEventListener('click', async () => {
-  if (!currentScript) return;
-
-  setStatus('Synthèse vocale ElevenLabs…', 'loading');
-  $('btnPrepAudio').disabled = true;
-  $('btnGenerate').disabled  = true;
-  $('audioPrepRow').classList.add('on');
-  $('prepFill').style.width = '0%';
-  $('prepPct').textContent  = '0 %';
-
-  try {
-    ensureAudio();
-    preparedBuffer = await buildElevenLabsBuffer(currentScript, $('elevenVoice').value, parseFloat($('voiceSpeed').value));
-    setStatus('Audio prêt — Lancer la séance ▶', 'idle');
-    $('btnPlay').disabled   = false;
-    $('btnReplay').disabled = false;
-  } catch(e) {
-    setStatus('Erreur ElevenLabs : ' + e.message, 'error');
-    console.error(e);
-    $('btnPrepAudio').disabled = false;
-  } finally {
-    $('btnGenerate').disabled = false;
-    setTimeout(() => $('audioPrepRow').classList.remove('on'), 3000);
-  }
-});
-
-// ▶ Launch session
-$('btnPlay').addEventListener('click', () => startSession());
-
-// ↺ Replay (same buffer, same script)
-$('btnReplay').addEventListener('click', () => startSession());
-
-// ■ Stop
-$('btnStop').addEventListener('click', () => stopAll(false));
-
-// Copy script
-$('btnCopy').addEventListener('click', async () => {
-  try {
-    await navigator.clipboard.writeText(currentScript || '');
-    const b = $('btnCopy');
-    b.textContent = '✓ Copié';
-    setTimeout(() => b.textContent = 'Copier', 1800);
-  } catch(e) {
-    alert('Copie impossible — sélectionne le texte manuellement.');
-  }
+/* ── SMOOTH ANCHOR ── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
 });
 </script>
 </body>

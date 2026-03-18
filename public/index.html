@@ -442,6 +442,38 @@
       margin-top: 10px;
     }
 
+
+    /* ─── LANG TOGGLE ─── */
+    .lang-toggle {
+      display: flex;
+      gap: 4px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px;
+      background: rgba(0,0,0,0.15);
+    }
+    .lang-btn {
+      padding: 5px 14px;
+      border-radius: 999px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: var(--gold);
+      color: #0b1526;
+      font-weight: 600;
+    }
+    .lang-btn:hover:not(.active) {
+      color: var(--text);
+    }
+
     /* ─── SEPARATOR ─── */
     .sep {
       height: 1px;
@@ -460,9 +492,15 @@
     <span class="brand-name">Flow Hypnose</span>
     <span class="brand-sub">Alpha · Theta · Gamma</span>
   </div>
-  <div class="status-pill" id="statusPill">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btnFR" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn"        id="btnEN" onclick="setLang('en')">EN</button>
+    </div>
+    <div class="status-pill" id="statusPill">
     <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">Prêt</span>
+    <span id="statusText" data-i18n="ready">Prêt</span>
+    </div>
   </div>
 </header>
 
@@ -472,85 +510,70 @@
 
     <!-- LEFT — CONFIG -->
     <section class="card">
-      <div class="card-title">Configuration</div>
+      <div class="card-title" data-i18n="config">Configuration</div>
 
-      <label>Thème / intention</label>
-      <input type="text" id="theme" placeholder="Ex : abondance financière, confiance en soi, lâcher-prise…" value="Abondance financière">
+      <label data-i18n="theme">Thème / intention</label>
+      <input type="text" id="theme" id="themePlaceholder" placeholder="Ex : abondance financière, confiance en soi, lâcher-prise…" data-i18n-placeholder="themePlaceholder"value="Abondance financière">
 
-      <label>Contexte (optionnel)</label>
-      <textarea id="context" placeholder="Ce que tu veux ressentir, ce qui te freine, tes objectifs spécifiques…"></textarea>
+      <label data-i18n="context">Contexte (optionnel)</label>
+      <textarea id="context" id="contextPlaceholder" placeholder="Ce que tu veux ressentir, ce qui te freine, tes objectifs spécifiques…"></textarea>
 
       <div class="row-2">
         <div>
-          <label>Durée de séance</label>
+          <label data-i18n="duration">Durée de séance</label>
           <select id="duration">
-            <option value="10">10 min — démo</option>
-            <option value="15">15 min</option>
-            <option value="20" selected>20 min — recommandé</option>
-            <option value="25">25 min</option>
+            <option value="10" data-fr="10 min — démo"       data-en="10 min — demo">10 min — démo</option>
+            <option value="15" data-fr="15 min"               data-en="15 min">15 min</option>
+            <option value="20" data-fr="20 min — recommandé"  data-en="20 min — recommended" selected>20 min — recommandé</option>
+            <option value="25" data-fr="25 min"               data-en="25 min">25 min</option>
           </select>
         </div>
         <div>
-          <label>Style de guidance</label>
+          <label data-i18n="tone">Style de guidance</label>
           <select id="tone">
-            <option value="ericksonien" selected>Ericksonien (métaphores)</option>
-            <option value="directif">Directif (précis, clair)</option>
-            <option value="contemplatif">Contemplatif (poétique)</option>
+            <option value="ericksonien" data-fr="Ericksonien (métaphores)"   data-en="Ericksonian (metaphors)" selected>Ericksonien (métaphores)</option>
+            <option value="directif"     data-fr="Directif (précis, clair)"  data-en="Directive (clear, precise)">Directif (précis, clair)</option>
+            <option value="contemplatif" data-fr="Contemplatif (poétique)"   data-en="Contemplative (poetic)">Contemplatif (poétique)</option>
           </select>
         </div>
       </div>
 
       <div class="row-2">
         <div>
-          <label>Volume binaural</label>
-          <input type="range" id="volume" min="0" max="1" step="0.01" value="0.18">
-        </div>
-        <div>
-          <label>Cycle respiratoire</label>
+          <label data-i18n="breath">Cycle respiratoire</label>
           <select id="breathRate">
-            <option value="8">8 s — standard</option>
-            <option value="10" selected>10 s — profond</option>
-            <option value="12">12 s — très lent</option>
+            <option value="8"  data-fr="8 s — standard"  data-en="8 s — standard">8 s — standard</option>
+            <option value="10" data-fr="10 s — profond"  data-en="10 s — deep" selected>10 s — profond</option>
+            <option value="12" data-fr="12 s — très lent" data-en="12 s — very slow">12 s — très lent</option>
           </select>
         </div>
       </div>
 
       <div class="row-2">
         <div>
-          <label>Vitesse de lecture — <span id="speedVal">0.65×</span></label>
-          <input type="range" id="voiceSpeed" min="0.50" max="1.10" step="0.05" value="0.65"
-            oninput="$('speedVal').textContent = parseFloat(this.value).toFixed(2) + '×'">
-          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px">
-            <span>0.5× très lent</span><span>1.0× normal</span>
-          </div>
-        </div>
-        <div>
-          <label>Volume voix — <span id="voiceVolVal">50%</span></label>
+          <label data-i18n="volVoice">Volume voix</label> <span id="voiceVolVal" style="font-size:11px;color:var(--muted)">50%</span>
           <input type="range" id="voiceVol" min="0" max="1" step="0.05" value="0.50"
             oninput="updateVoiceVol(this.value)">
           <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px">
-            <span>Silence</span><span>100%</span>
+            <span data-i18n="silence">Silence</span><span>100%</span>
           </div>
+        </div>
+        <div>
+          <label data-i18n="volBin">Volume binaural</label>
+          <input type="range" id="volume" min="0" max="1" step="0.01" value="0.18">
         </div>
       </div>
 
       <div class="row-2">
         <div>
-          <label>Voix ElevenLabs</label>
-          <select id="elevenVoice">
-            <optgroup label="Voix féminines">
-              <option value="21m00Tcm4TlvDq8ikWAM">Rachel — Douce & posée</option>
-              <option value="EXAVITQu4vr4xnSDxMaL">Bella — Chaleureuse</option>
-              <option value="XB0fDUnXU5powFXDhCwa">Charlotte — Sereine</option>
-              <option value="XrExE9yKIg1WjnnlVkGX">Matilda — Apaisante</option>
-              <option value="9BWtsMINqrJLrRacOk9x">Sarah — Naturelle</option>
-            </optgroup>
-            <optgroup label="Voix masculines">
-              <option value="JBFqnCBsd6RMkjVDRZzb">George — Grave & posé</option>
-              <option value="onwK4e9ZLuTAKqWW03F9">Daniel — Chaleureux</option>
-              <option value="ErXwobaYiN019PkySvjV">Antoni — Profond</option>
-            </optgroup>
-          </select>
+          <label data-i18n="voice">Voix ElevenLabs</label>
+          <select id="elevenVoice" onchange="$('customVoiceId').value=''"></select>
+          <input type="text" id="customVoiceId" id="customVoiceInput" placeholder="Ou colle ton Voice ID ElevenLabs…"
+            style="margin-top:8px;font-size:12px;padding:8px 10px;"
+            oninput="if(this.value) $('elevenVoice').value=''">
+          <div style="font-size:10px;color:var(--muted);margin-top:5px;line-height:1.5">
+            <span data-i18n="voiceHint">Voice ID : elevenlabs.io → Voices → click a voice → ID</span>
+          </div>
         </div>
       </div>
 
@@ -558,29 +581,29 @@
 
       <!-- ACTIONS -->
       <div class="btn-row">
-        <button class="btn-gold" id="btnGenerate">① Générer le script</button>
-        <button id="btnPrepAudio" disabled>② Préparer l'audio</button>
+        <button class="btn-gold" id="btnGenerate" data-i18n="btnGen">① Générer le script</button>
+        <button id="btnPrepAudio" disabled data-i18n="btnPrep">② Préparer l'audio</button>
       </div>
 
       <div class="audio-prep-row" id="audioPrepRow">
-        <span class="prep-label">Synthèse vocale</span>
+        <span class="prep-label" data-i18n="prepLabel">Synthèse vocale</span>
         <div class="prep-track"><div class="prep-fill" id="prepFill" style="width:0%"></div></div>
         <span class="prep-pct" id="prepPct">0 %</span>
       </div>
 
       <div class="btn-row" style="margin-top:10px">
-        <button class="btn-teal" id="btnPlay" disabled>▶ Lancer la séance</button>
-        <button id="btnStop" disabled>■ Arrêter</button>
+        <button class="btn-teal" id="btnPlay" disabled data-i18n="btnPlay">▶ Lancer la séance</button>
+        <button id="btnStop" disabled data-i18n="btnStop">■ Arrêter</button>
         <button id="btnReplay" disabled style="font-size:12px">↺ Rejouer</button>
       </div>
 
-      <p class="tip">Casque recommandé pour les binaural beats. Lance la séance une fois que tu es installé confortablement, dans un endroit calme.</p>
-      <p class="safety">⚠ Ne pas utiliser en conduisant. Déconseillé en cas d'épilepsie ou de trouble dissociatif non suivi.</p>
+      <p class="tip" data-i18n="tip">Casque recommandé pour les binaural beats. Lance la séance une fois que tu es installé confortablement, dans un endroit calme.</p>
+      <p class="safety" data-i18n="safety">⚠ Ne pas utiliser en conduisant. Déconseillé en cas d'épilepsie ou de trouble dissociatif non suivi.</p>
     </section>
 
     <!-- RIGHT — VISUAL -->
     <section class="card visual-panel">
-      <div class="card-title">Visualisation</div>
+      <div class="card-title" data-i18n="visual">Visualisation</div>
 
       <div class="orb-stage" id="orbStage">
         <div class="orb-rings" id="orbRings"></div>
@@ -609,8 +632,8 @@
   <!-- SCRIPT SECTION -->
   <section class="card script-section" id="scriptSection">
     <div class="script-header">
-      <div class="card-title" style="margin:0">Script généré — lu par ElevenLabs</div>
-      <button id="btnCopy" style="font-size:11px;padding:6px 12px">Copier</button>
+      <div class="card-title" style="margin:0" data-i18n="scriptTitle">Script généré — lu par Flow Hypnose</div>
+      <button id="btnCopy" style="font-size:11px;padding:6px 12px" data-i18n="btnCopy">Copier</button>
     </div>
     <div class="script-body" id="scriptBox">—</div>
   </section>
@@ -649,11 +672,11 @@ function toggleSettings() {
 /* ─────────────────────────────────────────────
    CLAUDE API — SCRIPT GENERATION
 ───────────────────────────────────────────── */
-async function generateScript({ theme, context, duration, tone }) {
+async function generateScript({ theme, context, duration, tone, lang }) {
   const res = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ theme, context, duration, tone })
+    body: JSON.stringify({ theme, context, duration, tone, lang })
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || `Erreur serveur ${res.status}`);
@@ -863,7 +886,6 @@ async function startSession() {
   if (preparedBuffer) {
     voiceSource = audioCtx.createBufferSource();
     voiceSource.buffer = preparedBuffer;
-    voiceSource.playbackRate.value = parseFloat($('voiceSpeed').value) || 0.65;
     voiceSource.connect(voiceGainNode);
     voiceSource.start(0);
     voiceSource.onended = () => { voiceSource = null; };
@@ -903,7 +925,7 @@ async function startSession() {
   }, 300);
 
   isRunning = true;
-  setStatus('Séance en cours', 'active');
+  setStatus(t('running'), 'active');
   $('btnStop').disabled    = false;
   $('btnPlay').disabled    = true;
   $('btnReplay').disabled  = true;
@@ -940,7 +962,7 @@ function stopAll(auto = false) {
   $('progressFill').style.width = '0%';
   $('timeLabel').textContent  = '00:00 / 00:00';
 
-  setStatus(auto ? 'Séance terminée ✓' : 'Arrêté', 'idle');
+  setStatus(auto ? t('done') : t('stopped'), 'idle');
 }
 
 /* ─────────────────────────────────────────────
@@ -950,9 +972,9 @@ function stopAll(auto = false) {
 // ① Generate script via Claude
 $('btnGenerate').addEventListener('click', async () => {
   const theme = $('theme').value.trim();
-  if (!theme) { alert('Précise un thème pour la séance.'); return; }
+  if (!theme) { alert(t('noTheme')); return; }
 
-  setStatus('Génération du script…', 'loading');
+  setStatus(t('generating'), 'loading');
   $('btnGenerate').disabled = true;
   $('btnPrepAudio').disabled = true;
   $('btnPlay').disabled = true;
@@ -965,14 +987,15 @@ $('btnGenerate').addEventListener('click', async () => {
       theme,
       context:  $('context').value.trim(),
       duration: parseInt($('duration').value),
-      tone:     $('tone').value
+      tone:     $('tone').value,
+      lang:     currentLang
     });
 
     currentScript = script;
     $('scriptBox').textContent = script;
     $('scriptSection').classList.add('on');
     $('btnPrepAudio').disabled = false;
-    setStatus('Script prêt — étape ②', 'idle');
+    setStatus(t('scriptReady'), 'idle');
 
   } catch(e) {
     setStatus('Erreur : ' + e.message, 'error');
@@ -986,7 +1009,7 @@ $('btnGenerate').addEventListener('click', async () => {
 $('btnPrepAudio').addEventListener('click', async () => {
   if (!currentScript) return;
 
-  setStatus('Synthèse vocale ElevenLabs…', 'loading');
+  setStatus(t('preparing'), 'loading');
   $('btnPrepAudio').disabled = true;
   $('btnGenerate').disabled  = true;
   $('audioPrepRow').classList.add('on');
@@ -995,8 +1018,9 @@ $('btnPrepAudio').addEventListener('click', async () => {
 
   try {
     ensureAudio();
-    preparedBuffer = await buildElevenLabsBuffer(currentScript, $('elevenVoice').value);
-    setStatus('Audio prêt — Lancer la séance ▶', 'idle');
+    const voiceId = $('customVoiceId').value.trim() || $('elevenVoice').value;
+    preparedBuffer = await buildElevenLabsBuffer(currentScript, voiceId);
+    setStatus(t('audioReady'), 'idle');
     $('btnPlay').disabled   = false;
     $('btnReplay').disabled = false;
   } catch(e) {
@@ -1023,12 +1047,241 @@ $('btnCopy').addEventListener('click', async () => {
   try {
     await navigator.clipboard.writeText(currentScript || '');
     const b = $('btnCopy');
-    b.textContent = '✓ Copié';
-    setTimeout(() => b.textContent = 'Copier', 1800);
+    b.textContent = t('copied');
+    setTimeout(() => { b.textContent = t('btnCopy'); }, 1800);
   } catch(e) {
     alert('Copie impossible — sélectionne le texte manuellement.');
   }
 });
+
+/* ─────────────────────────────────────────────
+   i18n — LANGUAGE SYSTEM
+───────────────────────────────────────────── */
+let currentLang = 'fr';
+
+const VOICES = {
+  fr: [
+    { group: 'Voix féminines / Female',
+      voices: [
+        { id: 'cgSgspJ2msm6clMCkdW9', label: 'Jessica — Douce & posée' },
+        { id: 'EXAVITQu4vr4xnSDxMaL', label: 'Sarah — Chaleureuse' },
+        { id: 'XB0fDUnXU5powFXDhCwa', label: 'Charlotte — Sereine' },
+        { id: 'XrExE9yKIg1WjnnlVkGX', label: 'Matilda — Apaisante' },
+        { id: 'nPczCjzI2devNBz1zQrb', label: 'Aria — Naturelle' },
+      ]
+    },
+    { group: 'Voix masculines / Male',
+      voices: [
+        { id: 'JBFqnCBsd6RMkjVDRZzb', label: 'George — Grave & posé' },
+        { id: 'onwK4e9ZLuTAKqWW03F9', label: 'Daniel — Chaleureux' },
+        { id: 'ErXwobaYiN019PkySvjV', label: 'Antoni — Profond' },
+      ]
+    }
+  ],
+  en: [
+    { group: 'Female voices',
+      voices: [
+        { id: 'cgSgspJ2msm6clMCkdW9', label: 'Jessica — Soft & poised' },
+        { id: 'EXAVITQu4vr4xnSDxMaL', label: 'Sarah — Warm' },
+        { id: 'XB0fDUnXU5powFXDhCwa', label: 'Charlotte — Serene' },
+        { id: 'XrExE9yKIg1WjnnlVkGX', label: 'Matilda — Soothing' },
+        { id: 'nPczCjzI2devNBz1zQrb', label: 'Aria — Natural' },
+      ]
+    },
+    { group: 'Male voices',
+      voices: [
+        { id: 'JBFqnCBsd6RMkjVDRZzb', label: 'George — Deep & calm' },
+        { id: 'onwK4e9ZLuTAKqWW03F9', label: 'Daniel — Warm' },
+        { id: 'ErXwobaYiN019PkySvjV', label: 'Antoni — Rich' },
+      ]
+    }
+  ]
+};
+
+const STRINGS = {
+  fr: {
+    config:      'Configuration',
+    theme:       'Thème / intention',
+    context:     'Contexte (optionnel)',
+    duration:    'Durée de séance',
+    tone:        'Style de guidance',
+    breath:      'Cycle respiratoire',
+    voice:       'Voix',
+    volVoice:    'Volume voix',
+    volBin:      'Volume binaural',
+    silence:     'Silence',
+    visual:      'Visualisation',
+    btnGen:      '① Générer le script',
+    btnPrep:     '② Préparer l'audio',
+    btnPlay:     '▶ Lancer la séance',
+    btnStop:     '■ Arrêter',
+    btnCopy:     'Copier',
+    prepLabel:   'Synthèse vocale',
+    scriptTitle: 'Script généré — Flow Hypnose',
+    tip:         'Casque recommandé pour les binaural beats. Lance la séance une fois que tu es installé confortablement, dans un endroit calme.',
+    safety:      '⚠ Ne pas utiliser en conduisant. Déconseillé en cas d'épilepsie ou de trouble dissociatif non suivi.',
+    ready:       'Prêt',
+    generating:  'Génération du script…',
+    scriptReady: 'Script prêt — étape ②',
+    preparing:   'Synthèse vocale…',
+    audioReady:  'Audio prêt — Lancer ▶',
+    running:     'Séance en cours',
+    done:        'Séance terminée ✓',
+    stopped:     'Arrêté',
+    inhale:      'Inspire…',
+    exhale:      'Expire…',
+    noTheme:     'Précise un thème pour la séance.',
+    errPrepare:  'Prépare d'abord le script.',
+    voiceHint:   'Voice ID : elevenlabs.io → Voices → clique sur une voix → ID',
+    copied:      '✓ Copié',
+    themePlaceholder: 'Ex : abondance financière, confiance en soi, lâcher-prise…',
+    contextPlaceholder: 'Ce que tu veux ressentir, ce qui te freine, tes objectifs spécifiques…',
+    phaseAlpha:  'Alpha — Relâchement',
+    phaseAT:     'Alpha → Theta',
+    phaseTheta:  'Theta — Visualisation',
+    phaseGamma:  'Gamma — Insight & ancrage',
+  },
+  en: {
+    config:      'Configuration',
+    theme:       'Theme / intention',
+    context:     'Context (optional)',
+    duration:    'Session duration',
+    tone:        'Guidance style',
+    breath:      'Breathing cycle',
+    voice:       'Voice',
+    volVoice:    'Voice volume',
+    volBin:      'Binaural volume',
+    silence:     'Silent',
+    visual:      'Visualisation',
+    btnGen:      '① Generate script',
+    btnPrep:     '② Prepare audio',
+    btnPlay:     '▶ Start session',
+    btnStop:     '■ Stop',
+    btnCopy:     'Copy',
+    prepLabel:   'Voice synthesis',
+    scriptTitle: 'Generated script — Flow Hypnose',
+    tip:         'Headphones recommended for binaural beats. Start the session once you are comfortably settled in a quiet place.',
+    safety:      '⚠ Do not use while driving. Not recommended in case of epilepsy or untreated dissociative disorder.',
+    ready:       'Ready',
+    generating:  'Generating script…',
+    scriptReady: 'Script ready — step ②',
+    preparing:   'Voice synthesis…',
+    audioReady:  'Audio ready — Start ▶',
+    running:     'Session in progress',
+    done:        'Session complete ✓',
+    stopped:     'Stopped',
+    inhale:      'Breathe in…',
+    exhale:      'Breathe out…',
+    noTheme:     'Please enter a theme for the session.',
+    errPrepare:  'Please prepare the script first.',
+    voiceHint:   'Voice ID: elevenlabs.io → Voices → click a voice → ID',
+    copied:      '✓ Copied',
+    themePlaceholder: 'E.g.: financial abundance, self-confidence, letting go…',
+    contextPlaceholder: 'What you want to feel, what holds you back, your specific goals…',
+    phaseAlpha:  'Alpha — Release',
+    phaseAT:     'Alpha → Theta',
+    phaseTheta:  'Theta — Visualisation',
+    phaseGamma:  'Gamma — Insight & anchor',
+  }
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+
+  // Toggle buttons
+  $('btnFR').classList.toggle('active', lang === 'fr');
+  $('btnEN').classList.toggle('active', lang === 'en');
+
+  const s = STRINGS[lang];
+
+  // Update all data-i18n elements
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (s[key] !== undefined) el.textContent = s[key];
+  });
+
+  // Placeholders
+  const themeInput = $('theme');
+  if (themeInput) themeInput.placeholder = s.themePlaceholder;
+  const ctxInput = $('context');
+  if (ctxInput) ctxInput.placeholder = s.contextPlaceholder;
+
+  // Option labels with data-fr / data-en
+  document.querySelectorAll('option[data-fr]').forEach(opt => {
+    opt.textContent = lang === 'fr' ? opt.getAttribute('data-fr') : opt.getAttribute('data-en');
+  });
+
+  // Rebuild voice selector
+  const sel = $('elevenVoice');
+  if (sel) {
+    const currentVal = sel.value;
+    sel.innerHTML = '';
+    VOICES[lang].forEach(group => {
+      const og = document.createElement('optgroup');
+      og.label = group.group;
+      group.voices.forEach((v, i) => {
+        const opt = document.createElement('option');
+        opt.value = v.id;
+        opt.textContent = v.label;
+        if (i === 0 && !currentVal) opt.selected = true;
+        if (v.id === currentVal) opt.selected = true;
+        og.appendChild(opt);
+      });
+      sel.appendChild(og);
+    });
+  }
+
+  // Custom voice placeholder
+  const custom = $('customVoiceId');
+  if (custom) custom.placeholder = lang === 'fr' ? 'Ou colle ton Voice ID ElevenLabs…' : 'Or paste your ElevenLabs Voice ID…';
+
+  // Voice hint
+  const hint = document.querySelector('[data-i18n="voiceHint"]');
+  if (hint) hint.textContent = s.voiceHint;
+
+  // Breathing hints (live)
+  const breathHint = $('breathHint');
+  if (breathHint && breathHint.classList.contains('on')) {
+    breathHint.textContent = inhaling ? s.inhale : s.exhale;
+  }
+
+  // Phase labels (live)
+  PHASES[0].label = s.phaseAlpha;
+  PHASES[1].label = s.phaseAT;
+  PHASES[2].label = s.phaseTheta;
+  PHASES[3].label = s.phaseGamma;
+}
+
+// Override setStatus to use i18n strings
+const _setStatus = setStatus;
+function t(key) { return STRINGS[currentLang][key] || key; }
+
+// Override breathing to use i18n
+function startBreathing() {
+  const cycle = parseInt($('breathRate').value) || 10;
+  const half  = Math.max(3, Math.floor(cycle / 2));
+  const orb   = $('orb');
+  const rings = $('orbRings');
+  const hint  = $('breathHint');
+
+  inhaling = true;
+  orb.classList.add('inhale');
+  rings.classList.add('inhale');
+  hint.textContent = t('inhale');
+  hint.classList.add('on');
+
+  breathTimer = setInterval(() => {
+    inhaling = !inhaling;
+    orb.classList.toggle('inhale',   inhaling);
+    rings.classList.toggle('inhale', inhaling);
+    hint.textContent = inhaling ? t('inhale') : t('exhale');
+  }, half * 1000);
+}
+
+// Init voices on load
+setLang('fr');
+
 </script>
 </body>
 </html>
